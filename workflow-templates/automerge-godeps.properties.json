@@ -1,0 +1,12 @@
+{
+  "name": "Automerge Go Dependencies",
+  "description": "Automerge go.mod and go.sum updates from upstream repositories pushed by nsmbot.",
+  "iconName": "automerge-godeps",
+  "categories": [
+    "Go"
+  ],
+  "filePatterns": [
+    "^go.mod$",
+    "^go.sum$"
+  ]
+}

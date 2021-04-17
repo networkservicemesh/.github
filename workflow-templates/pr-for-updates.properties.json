@@ -1,0 +1,5 @@
+{
+  "name": "PR for Updates",
+  "description": "Creates a PR for updates to update/** branches",
+  "iconName": "pr-for-updates"
+}

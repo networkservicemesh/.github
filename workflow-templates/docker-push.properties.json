@@ -1,0 +1,8 @@
+{
+  "name": "Docker Push",
+  "description": "Push Docker containers to registry",
+  "iconName": "docker-push.svg",
+  "filePatterns": [
+    "^Dockerfile$"
+  ]
+}
