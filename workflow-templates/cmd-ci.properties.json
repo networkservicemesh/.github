@@ -1,0 +1,12 @@
+{
+  "name": "Cmd CI",
+  "description": "CI to run for producing cmd docker containers",
+  "iconName": "cmd-ci",
+  "categories": [
+    "Go"
+  ],
+  "filePatterns": [
+    "^go.mod$",
+    "^go.sum$"
+  ]
+}

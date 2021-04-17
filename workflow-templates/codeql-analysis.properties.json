@@ -1,0 +1,11 @@
+{
+  "name": "CodeQL Analysis",
+  "description": "CodeQL Analysis for Go",
+  "iconName": "codeql-analysis",
+  "categories": [
+    "Go"
+  ],
+  "filePatterns": [
+    "*.go$"
+  ]
+}

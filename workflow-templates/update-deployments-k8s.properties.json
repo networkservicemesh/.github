@@ -1,0 +1,8 @@
+{
+  "name": "Update deployments-k8s",
+  "description": "Update deployments k8s with updated versions of docker container.",
+  "iconName": "update-deployments-k8s",
+  "filePatterns": [
+    "^Dockerfile$"
+  ]
+}
