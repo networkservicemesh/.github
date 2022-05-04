@@ -3,7 +3,7 @@ name: Exclude fmt.Errorf
 on:
   workflow_call:
 jobs:
-  excludeFmtErrorf:
+  exclude-fmt-errorf:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
