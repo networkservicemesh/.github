@@ -1,16 +1,17 @@
 ---
-name: Exclude fmt.Errorf
+name: Check go.mod and go.sum
 on:
   workflow_call:
 jobs:
-  exclude-fmt-errorf:
-    name: Ex
+  checkgomod:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Exclude fmt.Errorf
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.1
+      - run: go mod tidy
+      - name: Check for changes in go.mod or go.sum
         run: |
-          if grep -r --include=*.go --exclude=*.pb.go fmt.Errorf . ; then
-           echo "Please use errors.Errorf (or errors.New or errors.Wrap or errors.Wrapf) as appropriate rather than fmt.Errorf"
-           exit 1
-          fi
+          git diff --name-only --exit-code go.mod || ( echo "Run go tidy" && false )
+          git diff --name-only --exit-code go.sum || ( echo "Run go tidy" && false )
