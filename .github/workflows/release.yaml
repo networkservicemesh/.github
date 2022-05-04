@@ -67,7 +67,7 @@ jobs:
       - uses: actions/setup-go@v1
         with:
           go-version: 1.18.1
-      - name: Update ${{ github.repository }} locally
+      - name: Update ${{ matrix.repository }} locally
         working-directory: networkservicemesh/${{ matrix.repository }}
         run: |
           GOPRIVATE=github.com/networkservicemesh go get -u github.com/${{ github.repository }}@${{ steps.get-tag-step.outputs.tag }}
