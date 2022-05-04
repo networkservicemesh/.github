@@ -3,7 +3,7 @@ name: Check go.mod and go.sum
 on:
   workflow_call:
 jobs:
-  checkgomod:
+  check-gomod:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

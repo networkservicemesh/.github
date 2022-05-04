@@ -8,7 +8,7 @@ on:
         type: string
         required: true
 jobs:
-  restrictNSMDeps:
+  restrict-nsm-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
