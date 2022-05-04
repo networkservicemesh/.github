@@ -7,7 +7,6 @@ on:
         required: true
 jobs:
   auto-pull-request:
-    name: Pull Request on update/* Branch Push
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

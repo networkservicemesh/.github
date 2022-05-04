@@ -4,13 +4,12 @@
 #
 # You may wish to alter this file to override the set of languages analyzed,
 # or to provide custom queries or build logic.
-name: "CodeQL"
+name: CodeQL
 
 on:
   workflow_call:
 jobs:
   analyze:
-    name: Analyze
     runs-on: ubuntu-latest
 
     strategy:
