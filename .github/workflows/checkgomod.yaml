@@ -13,5 +13,5 @@ jobs:
       - run: go mod tidy
       - name: Check for changes in go.mod or go.sum
         run: |
-          git diff --name-only --exit-code go.mod || ( echo "Run go tidy" && false )
-          git diff --name-only --exit-code go.sum || ( echo "Run go tidy" && false )
+          git diff --name-only --exit-code go.mod || ( echo "Run go mod tidy" && false )
+          git diff --name-only --exit-code go.sum || ( echo "Run go mod tidy" && false )
