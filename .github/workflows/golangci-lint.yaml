@@ -2,10 +2,6 @@
 name: Bulid and test
 on:
   workflow_call:
-    inputs:
-      os:
-        type: string
-        required: true
 jobs:
   golangci-lint:
     name: golangci-lint
