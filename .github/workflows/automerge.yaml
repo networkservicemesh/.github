@@ -2,14 +2,6 @@
 name: Automerge
 on:
   workflow_call:
-    inputs:
-      username:
-        required: false
-        default: 'nsmbot'
-        type: string
-    secrets:
-      github-token:
-        required: false
 jobs:
   automerge:
     runs-on: ubuntu-latest
