@@ -4,6 +4,7 @@ on:
   workflow_call:
 jobs:
   exclude-fmt-errorf:
+    name: Ex
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
