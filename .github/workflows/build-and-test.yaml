@@ -8,19 +8,19 @@ on:
         required: true
 jobs:
   build-and-test:
-      runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          # tests need to be run as root (with sudo), windows doesn't support it
-          os: ${{ fromJson(inputs.os) }}
-      steps:
-        - name: Check out code
-          uses: actions/checkout@v2
-        - name: Setup Go
-          uses: actions/setup-go@v1
-          with:
-            go-version: 1.18.1
-        - name: Build
-          run: go build -race  ./...
-        - name: Test
-          run: go test -race ./...
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # tests need to be run as root (with sudo), windows doesn't support it
+        os: ${{ fromJson(inputs.os) }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.1
+      - name: Build
+        run: go build -race  ./...
+      - name: Test
+        run: go test -race ./...
