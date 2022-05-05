@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       allowed_repositories:
-        description: "Comma-separated list of allowed repositories"
+        description: Comma-separated list of allowed repositories
         type: string
         required: true
 jobs:

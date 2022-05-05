@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       os:
+        description: array of OS in json format
         type: string
         required: true
 jobs:
