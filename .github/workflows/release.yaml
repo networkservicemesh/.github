@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       dependent_repositories:
+        description: array of dependent repositories in json format
         type: string
         required: true
     secrets:
