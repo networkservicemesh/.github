@@ -1,0 +1,17 @@
+---
+name: Check go.mod and go.sum
+on:
+  workflow_call:
+jobs:
+  checkgomod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.1
+      - run: go mod tidy
+      - name: Check for changes in go.mod or go.sum
+        run: |
+          git diff --name-only --exit-code go.mod || ( echo "Run go mod tidy" && false )
+          git diff --name-only --exit-code go.sum || ( echo "Run go mod tidy" && false )

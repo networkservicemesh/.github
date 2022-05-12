@@ -1,0 +1,24 @@
+---
+name: Restrict dependencies on github.com/networkservicemesh/*
+on:
+  workflow_call:
+    inputs:
+      allowed_repositories:
+        description: Comma-separated list of allowed repositories
+        type: string
+        required: true
+jobs:
+  restrict-nsm-deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Restrict dependencies on github.com/networkservicemesh/*
+        env:
+          ALLOWED_REPOSITORIES: ${{ inputs.allowed_repositories }}
+        run: |
+          for i in $(grep github.com/networkservicemesh/ go.mod | grep -v '^module' | sed 's;.*\(github.com\/networkservicemesh\/[^ ]*\).*;\1;g');do
+            if ! [ "$(echo ${ALLOWED_REPOSITORIES} | grep ${i#github.com/networkservicemesh/})" ]; then
+              echo Dependency on "${i}" is forbidden
+              exit 1
+            fi
+          done
