@@ -14,7 +14,7 @@ on:
       token:
         required: true
 jobs:
-  update-dependent-repositories:
+  release-dependent-repositories:
     strategy:
       matrix:
         repository: ${{ fromJson(inputs.dependent_repositories) }}
