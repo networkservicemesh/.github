@@ -1,0 +1,51 @@
+---
+name: Release dependent repositories
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+      dependent_repositories:
+        description: array of dependent repositories in json format
+        type: string
+        required: true
+    secrets:
+      token:
+        required: true
+jobs:
+  update-dependent-repositories:
+    strategy:
+      matrix:
+        repository: ${{ fromJson(inputs.dependent_repositories) }}
+    name: Update ${{ matrix.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create commit
+        run: |
+          echo "Update go.mod and go.sum to ${{ github.repository }}@${{ inputs.tag }}" >> /tmp/commit-message
+      - name: Checkout networkservicemesh/${{ matrix.repository }}
+        uses: actions/checkout@v2
+        with:
+          path: networkservicemesh/${{ matrix.repository }}
+          repository: networkservicemesh/${{ matrix.repository }}
+          token: ${{ secrets.token }}
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.1
+      - name: Update ${{ matrix.repository }} locally
+        working-directory: networkservicemesh/${{ matrix.repository }}
+        run: |
+          GOPRIVATE=github.com/networkservicemesh go get -u github.com/${{ github.repository }}@${{ inputs.tag }}
+          go mod tidy
+          git diff
+      - name: Push update to the ${{ matrix.repository }}
+        working-directory: networkservicemesh/${{ matrix.repository }}
+        run: |
+          echo Starting to update repositotry ${{ matrix.repository }}
+          git config --global user.email "nsmbot@networkservicmesh.io"
+          git config --global user.name "NSMBot"
+          git add go.mod go.sum
+          git commit -s -F /tmp/commit-message
+          git checkout -b ${{ github.event.workflow_run.head_branch }}
+          git push -f origin ${{ github.event.workflow_run.head_branch }}
