@@ -32,4 +32,3 @@ jobs:
           release_name: ${{ inputs.tag }}
           draft: false
           prerelease: false
-  
