@@ -1,0 +1,34 @@
+---
+name: Docker Build & test
+on:
+  workflow_call:
+    secrets:
+      token:
+        required: true
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.2
+      - name: Build container
+        run: docker build .
+      - name: Run tests
+        run: docker run --privileged --rm $(docker build -q . --target test)
+      - name: Find merged PR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+        with:
+          github-token: ${{ secrets.token }}
+      - name: Publish Image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && success() && steps.findPr.outputs.number
+        uses: matootie/github-docker@v3.0.0
+        with:
+          accessToken: ${{ secrets.token }}
+          tag: |
+            pr-${{ steps.findPr.outputs.pr }}
+            commit-${{ github.sha }}
+            latest

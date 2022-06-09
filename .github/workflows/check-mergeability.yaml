@@ -1,0 +1,44 @@
+---
+name: Check mergeability
+on:
+  workflow_call:
+    secrets:
+      token:
+        required: true
+    outputs:
+      pr_branch_ref:
+        value: ${{ steps.check_mergeability.outputs.pr_branch_ref }}
+jobs:
+  check-mergeability:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find current PR
+        uses: jwalton/gh-find-current-pr@v1.0.2
+        id: findPr
+        with:
+          sha: ${{ github.event.workflow_run.head_sha }}
+          github-token: ${{ secrets.token }}
+      - name: Validate PR number
+        run: |
+          if [ -z ${{ steps.findPr.outputs.pr }} ]; then
+            echo "No opened PR was found for SHA ${{ github.event.workflow_run.head_sha }}"
+            exit 1
+          fi
+      - name: Get PR Info
+        id: get_pull_request_info
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/pulls/${{ steps.findPr.outputs.pr }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.token }}
+      - name: Check mergeability
+        id: check_mergeability
+        run: |
+          echo "Mergeable: ${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}"
+          PR_BRANCH_REF=${{ fromJson(steps.get_pull_request_info.outputs.data).head.ref }}
+          echo "PR_BRANCH_REF: $PR_BRANCH_REF"
+          echo "::set-output name=pr_branch_ref::$PR_BRANCH_REF"
+          if [ "${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}" != "true" ]; then
+            echo "PR has conflicts"
+            exit 1
+          fi

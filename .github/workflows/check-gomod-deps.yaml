@@ -1,0 +1,24 @@
+---
+name: Check go.mod dependencies
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          ref: refs/heads/${{github.event.workflow_run.head_branch}}
+
+      - name: Check go.mod deps
+        run: |
+          cat go.mod |
+          grep 'github.com/networkservicemesh/.* v' |
+          grep -v 'github.com/networkservicemesh/.* ${{ inputs.tag }}' || exit 0;
+
+          exit 1;
