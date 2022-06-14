@@ -7,7 +7,7 @@ on:
         required: true
     outputs:
       pr_branch_ref:
-        value: ${{ steps.check_mergeability.outputs.pr_branch_ref }}
+        value: ${{ jobs.check_mergeability.outputs.pr_branch_ref }}
 jobs:
   check-mergeability:
     runs-on: ubuntu-latest
