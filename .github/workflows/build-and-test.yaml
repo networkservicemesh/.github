@@ -12,7 +12,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # tests need to be run as root (with sudo), windows doesn't support it
         os: ${{ fromJson(inputs.os) }}
     steps:
       - name: Check out code
@@ -25,3 +24,11 @@ jobs:
         run: go build -race  ./...
       - name: Test
         run: go test -race ./...
+      - name: Test with permissions
+        if: ${{ !contains(matrix.os, 'windows') }}
+        run: |
+          count=$(go test ./... --list Perm -tags perm | grep Perm | wc -l)
+          echo $count
+          if [ $count -gt 0 ]; then
+            sudo -E PATH="$PATH" bash -c "go test -race -run Perm ./... -tags=perm"
+          fi
