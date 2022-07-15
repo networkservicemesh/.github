@@ -5,7 +5,7 @@ on:
     inputs:
       config_file:
         type: string
-        defailt: .ci/yamllint.yml
+        default: .ci/yamllint.yml
 jobs:
   yamllint:
     runs-on: ubuntu-latest
