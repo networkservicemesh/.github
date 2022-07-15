@@ -2,7 +2,7 @@
 name: Yamllint
 on:
   workflow_call:
-   inputs:
+    inputs:
       config_file:
         type: string
         defailt: .ci/yamllint.yml
