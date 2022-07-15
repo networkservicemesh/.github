@@ -2,6 +2,10 @@
 name: Yamllint
 on:
   workflow_call:
+    inputs:
+      config_file:
+        type: string
+        defailt: .ci/yamllint.yml
 jobs:
   yamllint:
     runs-on: ubuntu-latest
@@ -11,5 +15,5 @@ jobs:
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v1
         with:
-          config_file: .ci/yamllint.yml
+          config_file: ${{ inputs.config_file }}
           strict: true
