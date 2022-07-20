@@ -11,8 +11,8 @@ jobs:
   push:
     runs-on: ubuntu-latest
     env:
-      DOCKER_PASSWORD: ${{ secrets.docker-login }}
-      DOCKER_USER: ${{ secrets.docker-password }}
+      DOCKER_USER: ${{ secrets.docker-login }}
+      DOCKER_PASSWORD: ${{ secrets.docker-password }}
       ORG: networkservicemeshci
       CGO_ENABLED: 0
       NAME: ${{ github.event.repository.name }}
