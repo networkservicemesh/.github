@@ -2,17 +2,17 @@
 name: Check mergeability
 on:
   workflow_call:
-    secrets:
-      token:
-        required: true
     outputs:
       pr_branch_ref:
         value: ${{ jobs.check_mergeability.outputs.pr_branch_ref }}
+    secrets:
+      token:
+        required: true
 jobs:
-  check-mergeability:
+  check_mergeability:
     runs-on: ubuntu-latest
     outputs:
-      pr_branch_ref: ${{ steps.check_mergeability.outputs.pr_branch_ref}}
+      pr_branch_ref: ${{ steps.check_mergeability.outputs.pr_branch_ref }}
     steps:
       - name: Find current PR
         uses: jwalton/gh-find-current-pr@v1.0.2
@@ -42,5 +42,6 @@ jobs:
           echo "::set-output name=pr_branch_ref::$PR_BRANCH_REF"
           if [ "${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}" != "true" ]; then
             echo "PR has conflicts"
+            echo $PR_BRANCH_REF
             exit 1
           fi
