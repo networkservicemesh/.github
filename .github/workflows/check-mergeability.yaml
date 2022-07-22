@@ -11,6 +11,8 @@ on:
 jobs:
   check-mergeability:
     runs-on: ubuntu-latest
+    outputs:
+      pr_branch_ref: ${{ steps.check_mergeability.outputs.pr_branch_ref}}
     steps:
       - name: Find current PR
         uses: jwalton/gh-find-current-pr@v1.0.2
