@@ -1,7 +1,13 @@
 ---
-name: Bulid and test
+name: Golang CI linter
 on:
   workflow_call:
+    inputs:
+      linter-version:
+        description: version of golangci-lint
+        type: string
+        default: v1.49.0
+        required: false
 jobs:
   golangci-lint:
     name: golangci-lint
@@ -18,4 +24,4 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.49.0
+          version: ${{ inputs.linter-version }}
