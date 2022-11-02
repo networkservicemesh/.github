@@ -26,4 +26,4 @@ jobs:
         with:
           GITHUB_LOGIN: nsmbot
           ENABLED_FOR_MANUAL_CHANGES: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
