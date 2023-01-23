@@ -39,7 +39,7 @@ jobs:
           echo "Mergeable: ${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}"
           PR_BRANCH_REF=${{ fromJson(steps.get_pull_request_info.outputs.data).head.ref }}
           echo "PR_BRANCH_REF: $PR_BRANCH_REF"
-          echo "::set-output name=pr_branch_ref::$PR_BRANCH_REF"
+          echo "pr_branch_ref=$PR_BRANCH_REF" >> $GITHUB_OUTPUT
           if [ "${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}" != "true" ]; then
             echo "PR has conflicts"
             exit 1
