@@ -1,0 +1,124 @@
+---
+name: Release
+on:
+  workflow_call:
+    inputs:
+      dependent_repositories:
+        type: string
+    secrets:
+      NSM_BOT_GITHUB_TOKEN:
+        required: true
+jobs:
+  print-debug-info:
+    name: Print debug info for Release workflow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/debug-action@v2
+
+  create-release:
+    name: Create release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && contains(github.event.workflow_run.head_branch, 'release/') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: refs/heads/${{github.event.workflow_run.head_branch}}
+      - name: Get tag
+        run: |
+          branch=${{github.event.workflow_run.head_branch}}
+          echo '::set-output name=tag::'${branch#release/}
+        id: get-tag-step
+      - name: Check non-release dependencies
+        run: |
+          nonrelease=$(grep < go.mod -P \
+            '^\tgithub.com/networkservicemesh/(?!gotestmd )[a-zA-Z0-9_-]+ v[^ ]+[.-][0-9]{14}-[0-9a-f]{12}' || true)
+          if [ "$nonrelease" ]; then
+            echo "Found non-release dependencies:"
+            echo "$nonrelease"
+            ## exit 1
+          fi
+      - name: Push tag ${{ steps.get-tag-step.outputs.tag }}
+        run: |
+          git status
+          git tag ${{ steps.get-tag-step.outputs.tag }}
+          git push origin ${{ steps.get-tag-step.outputs.tag }} -f
+      - name: Create release ${{ steps.get-tag-step.outputs.tag }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+        with:
+          tag_name: refs/tags/${{ steps.get-tag-step.outputs.tag }}
+          release_name: ${{ steps.get-tag-step.outputs.tag }}
+          draft: false
+          prerelease: false
+
+  update-dependent-repositories:
+    strategy:
+      matrix:
+        repository: ${{fromJson(inputs.dependent_repositories)}}
+    name: Update ${{ matrix.repository }}
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && contains(github.event.workflow_run.head_branch, 'release/') && inputs.dependent_repositories }}
+    steps:
+      - name: Get tag
+        run: |
+          branch=${{github.event.workflow_run.head_branch}}
+          echo '::set-output name=tag::'${branch#release/}
+        id: get-tag-step
+      - name: Create commit
+        run: |
+          echo "Update go.mod and go.sum to ${{ github.repository }}@${{ steps.get-tag-step.outputs.tag }}" >> /tmp/commit-message
+      - name: Checkout networkservicemesh/${{ matrix.repository }}
+        uses: actions/checkout@v2
+        with:
+          path: networkservicemesh/${{ matrix.repository }}
+          repository: networkservicemesh/${{ matrix.repository }}
+          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.16
+      - name: Update ${{ github.repository }}
+        working-directory: networkservicemesh/${{ matrix.repository }}
+        run: |
+          git config --global user.email "nsmbot@networkservicmesh.io"
+          git config --global user.name "NSMBot"
+
+          release=${{ github.event.workflow_run.head_branch }}
+
+          for attempt in {1..5}; do
+            echo "attempt $attempt"
+            git fetch -p origin
+            base=$release
+            git show-ref --quiet refs/remotes/origin/$base || base=main
+
+            git checkout --force -B "$release" "refs/remotes/origin/$base"
+            git clean -fxd
+
+            echo "## running" \
+            GOPRIVATE=github.com/networkservicemesh go get -u \
+              github.com/${{ github.repository }}@${{ steps.get-tag-step.outputs.tag }}
+            go mod tidy
+
+            if ! git diff; then
+              echo "Already updated"
+              ## exit 1
+              touch test; git add test ##
+            fi
+
+            git add go.mod go.sum
+            git commit --signoff --file=/tmp/commit-message
+
+            echo "ok done"; exit 3  ##
+
+            if git push --set-upstream origin "$release"; then
+              exit 0
+            else
+              echo "Trying again in 15 seconds..."
+              sleep 15
+            fi
+          done
+
+          echo "Can't update the repo after $attemp attempts"
+          exit 1
