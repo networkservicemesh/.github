@@ -19,6 +19,6 @@ jobs:
         run: |
           cat go.mod |
           grep 'github.com/networkservicemesh/.* v' |
+          grep -v 'github.com/networkservicemesh/govpp.*' |
           grep -v 'github.com/networkservicemesh/.* ${{ inputs.tag }}' || exit 0;
-
           exit 1;
