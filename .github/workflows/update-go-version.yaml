@@ -1,0 +1,37 @@
+name: Update Golang version
+run-name: ${{ github.actor }} has started Golang version update 
+on:
+    create
+jobs:
+  Update-Golang-version:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/heads/updates/golang_') }}
+    outputs:
+      new-go-version: ${{ steps.get-version-number.outputs.new-go-version }}
+    steps:
+      - run: echo "github.ref = ${{ github.ref }}"
+      - name: Get version number
+        id: get-version-number
+        run: |
+            NEW_GO_VERSION=$(echo "${{ github.ref }}" | sed  's/.*updates\/golang_\(.*\)$/\1/g')
+            echo "New go version $NEW_GO_VERSION"
+            echo "new-go-version=${NEW_GO_VERSION}" >> "$GITHUB_OUTPUT"
+      - run: |
+            echo "(-)New go version: ${{ steps.get-version-number.outputs.new-go-version }}"
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Update Go version in code
+        run: |
+          find . -name '*.yaml' -exec sed -i -e 's/ go-version\: [1-9][0-9\.]*[0-9]$/go-version\: ${{ steps.get-version-number.outputs.new-go-version }}/g' {} \;
+      - name: Create & push commit
+        run: |
+          git config --global user.email "nsmbot@networkservicmesh.io"
+          git config --global user.name "NSMBot"
+          git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
+          git push
+          git log | head  
+        with:
+          GITHUB_LOGIN: bellycat77
+          ENABLED_FOR_MANUAL_CHANGES: true
+          GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+          MAXIMUM_RETRIES: 25
