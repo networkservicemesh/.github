@@ -29,5 +29,5 @@ jobs:
           git config --global user.email "nsmbot@networkservicmesh.io"
           git config --global user.name "bellycat77"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
-          git push
+          git push -f origin ${{ github.ref }}
           git log | head
