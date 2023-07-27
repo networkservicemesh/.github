@@ -15,7 +15,7 @@ jobs:
       - name: Get version number
         id: get-version-number
         run: |
-            NEW_GO_VERSION=$(echo "${{ github.ref }}" | sed  's/refs/heads/update/go_\(.*\)$/\1/g')
+            NEW_GO_VERSION=$(echo "${{ github.ref }}" | sed 's/refs\/heads\/update\/go_\(.*\)$/\1/g')
             echo "New go version $NEW_GO_VERSION"
             echo "new-go-version=${NEW_GO_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Check out code
