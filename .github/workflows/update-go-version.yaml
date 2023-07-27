@@ -2,6 +2,8 @@ name: Update Golang version
 run-name: ${{ github.actor }} has started Golang version update 
 on:
     create
+permissions:
+  contents: write
 jobs:
   Update-Golang-version:
     runs-on: ubuntu-latest
@@ -30,3 +32,5 @@ jobs:
           git config --global user.name "bellycat77"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
           git log | head
+      - name: Push commit
+        run: git push
