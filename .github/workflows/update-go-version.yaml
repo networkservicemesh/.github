@@ -7,7 +7,7 @@ permissions:
 jobs:
   Update-Golang-version:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/heads/updates/golang_') }}
+    if: ${{ startsWith(github.ref, 'refs/heads/update/go_') }}
     outputs:
       new-go-version: ${{ steps.get-version-number.outputs.new-go-version }}
     steps:
@@ -15,24 +15,32 @@ jobs:
       - name: Get version number
         id: get-version-number
         run: |
-            NEW_GO_VERSION=$(echo "${{ github.ref }}" | sed  's/.*updates\/golang_\(.*\)$/\1/g')
+            NEW_GO_VERSION=$(echo "${{ github.ref }}" | sed  's/refs/heads/update/go_\(.*\)$/\1/g')
             echo "New go version $NEW_GO_VERSION"
             echo "new-go-version=${NEW_GO_VERSION}" >> "$GITHUB_OUTPUT"
-      - run: |
-            echo "(-)New go version: ${{ steps.get-version-number.outputs.new-go-version }}"
       - name: Check out code
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
-      - name: Update Go version in code
+      - name: Update Go version in code to ${{ steps.get-version-number.outputs.new-go-version }}
         run: |
-          find . -name '*.yaml' -exec sed -i -e 's/ go-version\: [1-9][0-9\.]*[0-9]$/go-version\: ${{ steps.get-version-number.outputs.new-go-version }}/g' {} \;
-          git diff
-      - name: Create commit
+          find . -name '*.yaml' -exec sed -i -e 's/ go-version\: [1-9][0-9\.]*[0-9]$/ go-version\: ${{ steps.get-version-number.outputs.new-go-version }}/g' {} \;
+      - name: Create & push commit
         run: |
           git config --global user.email "nsmbot@networkservicmesh.io"
-          git config --global user.name "bellycat77"
+          git config --global user.name "NSMBot"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
-          git log | head
-      - name: Push commit
-        run: git push
+          git push
+      - name: Construct PR message
+        run: |
+            PULL_REQUEST_BODY="Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
+            echo "$PULL_REQUEST_BODY"
+            echo "PULL_REQUEST_BODY<<EOF" >> $GITHUB_ENV
+            echo "$PULL_REQUEST_BODY" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+      - name: pull-request-action
+        uses: vsoch/pull-request-action@1.0.24
+        env:
+          GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN  }}
+          BRANCH_PREFIX: "update/"
+          PULL_REQUEST_BRANCH: "main"
