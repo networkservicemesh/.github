@@ -29,9 +29,4 @@ jobs:
           git config --global user.name "NSMBot"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
           git push
-          git log | head  
-        with:
-          GITHUB_LOGIN: bellycat77
-          ENABLED_FOR_MANUAL_CHANGES: true
-          GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
-          MAXIMUM_RETRIES: 25
+          git log | head
