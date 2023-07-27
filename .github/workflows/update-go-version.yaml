@@ -21,7 +21,7 @@ jobs:
       - run: |
             echo "(-)New go version: ${{ steps.get-version-number.outputs.new-go-version }}"
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Update Go version in code
         run: |
           find . -name '*.yaml' -exec sed -i -e 's/ go-version\: [1-9][0-9\.]*[0-9]$/go-version\: ${{ steps.get-version-number.outputs.new-go-version }}/g' {} \;
