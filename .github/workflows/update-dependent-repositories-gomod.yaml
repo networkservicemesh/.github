@@ -7,10 +7,28 @@ on:
         description: array of dependent repositories in json format
         type: string
         required: true
+      base_repository:
+        description: base repository which reference will be updated in dependent repositories
+        type: string
+        default: ""
     secrets:
       token:
         required: true
 jobs:
+  setup-base-repository:
+    runs-on: ubuntu-latest
+    outputs:
+      base_repository: ${{ steps.setup.outputs.base_repository }}
+    steps:
+      - id: setup
+        run: |
+          base=${{ inputs.base_repository }}
+          if [ -z "$base" ]
+          then
+            base=${{ github.repository }}
+          fi
+          echo "base_repository=$base" >> "$GITHUB_OUTPUT"
+
   update-dependent-repositories:
     continue-on-error: true
     strategy:
@@ -19,6 +37,7 @@ jobs:
         repository: ${{ fromJson(inputs.dependent_repositories) }}
     name: Update ${{ matrix.repository }}
     runs-on: ubuntu-latest
+    needs: setup-base-repository
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v2
@@ -55,7 +74,7 @@ jobs:
       - name: Update ${{ matrix.repository }} locally
         working-directory: networkservicemesh/${{ matrix.repository }}
         run: |
-          GOPRIVATE=github.com/networkservicemesh go get -u github.com/${{ github.repository }}@main
+          GOPRIVATE=github.com/networkservicemesh go get -u github.com/${{ needs.setup-base-repository.outputs.base-repository }}@main
           go mod tidy
           git diff
       - name: Push update to the ${{ matrix.repository }}
