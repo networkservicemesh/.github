@@ -14,8 +14,6 @@ on:
     secrets:
       token:
         required: true
-env:
-  BASE_REPOSITORY: ""
 
 jobs:
   setup-base-repository:
