@@ -62,6 +62,6 @@ jobs:
           pwd
           ls -la
       - name: auto-pull-request
-        uses: ./github/workflows/pr-for-updates.yaml
+        uses: ./.github/workflows/pr-for-updates.yaml
         with:
           token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}      
