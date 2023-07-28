@@ -31,16 +31,20 @@ jobs:
           git config --global user.name "NSMBot"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
           git push
-      - name: Construct PR message
-        run: |
-            PULL_REQUEST_BODY="Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
-            echo "$PULL_REQUEST_BODY"
-            echo "PULL_REQUEST_BODY<<EOF" >> $GITHUB_ENV
-            echo "$PULL_REQUEST_BODY" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-      - name: pull-request-action
-        uses: vsoch/pull-request-action@1.0.24
-        env:
-          GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN  }}
-          BRANCH_PREFIX: "update/"
-          PULL_REQUEST_BRANCH: "main"
+      # - name: Construct PR message
+      #   run: |
+      #       PULL_REQUEST_BODY="Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
+      #       echo "$PULL_REQUEST_BODY"
+      #       echo "PULL_REQUEST_BODY<<EOF" >> $GITHUB_ENV
+      #       echo "$PULL_REQUEST_BODY" >> $GITHUB_ENV
+      #       echo "EOF" >> $GITHUB_ENV
+      # - name: pull-request-action
+      #   uses: vsoch/pull-request-action@1.0.24
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN  }}
+      #     BRANCH_PREFIX: "update/"
+      #     PULL_REQUEST_BRANCH: "main"
+      - name: auto-pull-request
+        uses: pr-for-updates.yaml
+        with:
+          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
