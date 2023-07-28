@@ -1,16 +1,17 @@
+---
 name: Update Golang version
 run-name: ${{ github.actor }} has started Golang version update
 on:
-  pull_request:
-    branches: [main]
+  workflow_run:
+    types:
+      - completed
+    workflows:
+      - "ci"
+  
   create:
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
-  Update-Golang-version:
+  Update-Golang-version-make-PR:
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/heads/update/go_') && github.event_name == 'create' }}
     outputs:
@@ -62,7 +63,7 @@ jobs:
 
   Update-Golang-version-check-PR-info:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'workflow_run' }}
     steps:
       - name: Print GitHub event info
         run: |
@@ -75,11 +76,32 @@ jobs:
             echo "github.event_name: ${{ github.event_name }}"
             echo "github.action: ${{ github.action }}"
             echo "github.event.ref: ${{ github.event.ref }}"
-            echo "github.event.pull_request.mergeable : ${{ github.event.pull_request.mergeable }}"
-            echo "github.event.pull_request.base : ${{ github.event.pull_request.base }}"
+            echo "github.event.workflow_run.conclusion: ${{ github.event.workflow_run.conclusion }}"
+            echo "github.event.workflow_run.event: ${{ github.event.workflow_run.event }}"
+            echo "github.event.workflow_run.head_branch: ${{ github.event.workflow_run.head_branch }}"
+            echo "github.event.workflow_run.head_commit: ${{ github.event.workflow_run.head_commit }}"
+            echo "github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
 
-  Update-Golang-version-check-PR-mergeability:
-    needs: [Update-Golang-version-check-PR-info]
-    uses: ./.github/workflows/check-mergeability.yaml
-    secrets:
-      token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+  # Update-Golang-version-check-PR-mergeability:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     pr_branch_ref: ${{ steps.check_mergeability.outputs.pr_branch_ref }}
+  #   steps:
+  #     - name: Get PR Info
+  #       id: get_pull_request_info
+  #       uses: octokit/request-action@v2.x
+  #       with:
+  #         route: GET /repos/${{ github.repository }}/pulls/${{ steps.findPr.outputs.pr }}
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.token }}
+  #     - name: Check mergeability
+  #       id: check_mergeability
+  #       run: |
+  #         echo "Mergeable: ${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}"
+  #         PR_BRANCH_REF=${{ fromJson(steps.get_pull_request_info.outputs.data).head.ref }}
+  #         echo "PR_BRANCH_REF: $PR_BRANCH_REF"
+  #         echo "pr_branch_ref=$PR_BRANCH_REF" >> $GITHUB_OUTPUT
+  #         if [ "${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}" != "true" ]; then
+  #           echo "PR has conflicts"
+  #           exit 1
+  #         fi
