@@ -44,7 +44,13 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN  }}
       #     BRANCH_PREFIX: "update/"
       #     PULL_REQUEST_BRANCH: "main"
+
+  Update-Golang-version-PR:
+    runs-on: ubuntu-latest
+    needs: [Update-Golang-version]
+    if: ${{ needs.Update-Golang-version.result == 'success' }}
+    steps:
       - name: auto-pull-request
         uses: ./pr-for-updates.yaml
         with:
-          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}      
