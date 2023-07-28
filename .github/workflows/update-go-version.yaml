@@ -45,6 +45,6 @@ jobs:
       #     BRANCH_PREFIX: "update/"
       #     PULL_REQUEST_BRANCH: "main"
       - name: auto-pull-request
-        uses: pr-for-updates.yaml
+        uses: ./pr-for-updates.yaml
         with:
           token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
