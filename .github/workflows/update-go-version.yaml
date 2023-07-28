@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
+
 jobs:
   Update-Golang-version:
     runs-on: ubuntu-latest
@@ -66,6 +68,9 @@ jobs:
         run: |
             echo "github.ref = ${{ github.ref }}"
             echo "github.base_ref: ${{ github.base_ref }}"
+            echo "github.head_ref: ${{ github.head_ref }}"
+            echo "github.ref_name: ${{ github.ref_name }}"
+            echo "github.sha: ${{ github.sha }}"
             echo "github.event.action: ${{ github.event.action }}"
             echo "github.event_name: ${{ github.event_name }}"
             echo "github.action: ${{ github.action }}"
