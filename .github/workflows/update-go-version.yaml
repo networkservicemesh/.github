@@ -10,12 +10,17 @@ permissions:
 jobs:
   Update-Golang-version:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/heads/update/go_') }}
+    if: ${{ startsWith(github.ref, 'refs/heads/update/go_') && github.event_name == 'create' }}
     outputs:
       new-go-version: ${{ steps.get-version-number.outputs.new-go-version }}
       new-go-major-version: ${{ steps.get-version-number.outputs.new-go-major-version }}
     steps:
       - run: echo "github.ref = ${{ github.ref }}"
+      - name: Print GitHub event action info
+        run: |
+            echo "github.event.action: ${{ github.event.action }}"
+            echo "github.event_name: ${{ github.event_name }}"
+            echo "github.action: ${{ github.action }}"
       - name: Get version number
         id: get-version-number
         run: |
@@ -53,11 +58,19 @@ jobs:
           BRANCH_PREFIX: "update/"
           PULL_REQUEST_BRANCH: "main"
 
-  Update-Golang-version-MR:
+  Update-Golang-version-check-PR:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && github.event.action }}
     steps:
-      - name: Print GitHub event action
+      - name: Print GitHub event info
         run: |
-          echo "Event action: ${{ github.event.action }}"
-          echo "Event name: ${{ github.event_name }}"
-          echo "Action: ${{ github.action }}"
+            echo "github.ref = ${{ github.ref }}"
+            echo "github.base_ref: ${{ github.base_ref }}"
+            echo "github.event.action: ${{ github.event.action }}"
+            echo "github.event_name: ${{ github.event_name }}"
+            echo "github.action: ${{ github.action }}"
+      - name: Check mergeability
+        uses: ./.github/workflows/check-mergeability.yaml
+        with:
+          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+
