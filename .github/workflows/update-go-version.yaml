@@ -1,5 +1,5 @@
 name: Update Golang version
-run-name: ${{ github.actor }} has started Golang version update 
+run-name: ${{ github.actor }} has started Golang version update
 on:
   pull_request:
     branches: [main]
@@ -58,4 +58,6 @@ jobs:
     steps:
       - name: Print GitHub event action
         run: |
-          echo "${{ github.event.action }}"  
+          echo "Event action: ${{ github.event.action }}"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Action: ${{ github.action }}"
