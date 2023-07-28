@@ -61,6 +61,7 @@ jobs:
       - run: |
           pwd
           ls -la
+          ls -la .github/workflows
       - name: auto-pull-request
         uses: ./.github/workflows/pr-for-updates.yaml
         with:
