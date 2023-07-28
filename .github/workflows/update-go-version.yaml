@@ -50,6 +50,13 @@ jobs:
     needs: [Update-Golang-version]
     if: ${{ needs.Update-Golang-version.result == 'success' }}
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+      - run: |
+          pwd
+          ls -la
       - name: auto-pull-request
         uses: ./workflows/pr-for-updates.yaml
         with:
