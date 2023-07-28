@@ -1,7 +1,10 @@
 name: Update Golang version
 run-name: ${{ github.actor }} has started Golang version update 
 on:
-    create
+  pull_request:
+    branches: [main]
+  create:
+
 permissions:
   contents: write
 jobs:
@@ -35,34 +38,24 @@ jobs:
           git config --global user.name "NSMBot"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
           git push
-      # - name: Construct PR message
-      #   run: |
-      #       PULL_REQUEST_BODY="Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
-      #       echo "$PULL_REQUEST_BODY"
-      #       echo "PULL_REQUEST_BODY<<EOF" >> $GITHUB_ENV
-      #       echo "$PULL_REQUEST_BODY" >> $GITHUB_ENV
-      #       echo "EOF" >> $GITHUB_ENV
-      # - name: pull-request-action
-      #   uses: vsoch/pull-request-action@1.0.24
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN  }}
-      #     BRANCH_PREFIX: "update/"
-      #     PULL_REQUEST_BRANCH: "main"
+      # TODO: Use .github/workflows/pr-for-updates.yaml for creating PR
+      - name: Construct PR message
+        run: |
+            PULL_REQUEST_BODY="Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
+            echo "$PULL_REQUEST_BODY"
+            echo "PULL_REQUEST_BODY<<EOF" >> $GITHUB_ENV
+            echo "$PULL_REQUEST_BODY" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+      - name: pull-request-action
+        uses: vsoch/pull-request-action@1.0.24
+        env:
+          GITHUB_TOKEN: ${{ secrets.NSM_BOT_GITHUB_TOKEN  }}
+          BRANCH_PREFIX: "update/"
+          PULL_REQUEST_BRANCH: "main"
 
-  Update-Golang-version-PR:
+  Update-Golang-version-MR:
     runs-on: ubuntu-latest
-    needs: [Update-Golang-version]
-    if: ${{ needs.Update-Golang-version.result == 'success' }}
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
-      - run: |
-          pwd
-          ls -la
-          ls -la .github/workflows
-      - name: auto-pull-request
-        uses: ./.github/workflows/pr-for-updates.yaml
-        with:
-          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}      
+      - name: Print GitHub event action
+        run: |
+          echo "${{ github.event.action }}"  
