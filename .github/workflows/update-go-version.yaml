@@ -51,6 +51,6 @@ jobs:
     if: ${{ needs.Update-Golang-version.result == 'success' }}
     steps:
       - name: auto-pull-request
-        uses: ./.github/workflows/pr-for-updates.yaml
+        uses: ./workflows/pr-for-updates.yaml
         with:
           token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}      
