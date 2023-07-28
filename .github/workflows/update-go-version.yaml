@@ -74,9 +74,7 @@ jobs:
             echo "github.event.pull_request.base : ${{ github.event.pull_request.base }}"
 
   Update-Golang-version-check-PR-mergeability:
-    if: ${{ github.event_name == 'pull_request' }}
     needs: [Update-Golang-version-check-PR-info]
     uses: ./.github/workflows/check-mergeability.yaml
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-
