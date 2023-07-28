@@ -60,7 +60,7 @@ jobs:
 
   Update-Golang-version-check-PR:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && github.event.action }}
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Print GitHub event info
         run: |
@@ -69,8 +69,11 @@ jobs:
             echo "github.event.action: ${{ github.event.action }}"
             echo "github.event_name: ${{ github.event_name }}"
             echo "github.action: ${{ github.action }}"
+            echo "github.event.ref: ${{ github.event.ref }}"
+            echo "github.event.pull_request.mergeable : ${{ github.event.pull_request.mergeable }}"
+            echo "github.event.pull_request.base : ${{ github.event.pull_request.base }}"
       - name: Check mergeability
-        uses: ./.github/workflows/check-mergeability.yaml
+        uses: bellycat77/.github/.github/workflows/check-mergeability.yaml@main
         with:
           token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
 
