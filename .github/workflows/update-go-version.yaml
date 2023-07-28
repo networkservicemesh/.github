@@ -68,6 +68,7 @@ jobs:
       - name: Print GitHub event info
         run: |
             echo "github.ref = ${{ github.ref }}"
+            echo "github.actor = ${{ github.actor }}"
             echo "github.base_ref: ${{ github.base_ref }}"
             echo "github.head_ref: ${{ github.head_ref }}"
             echo "github.ref_name: ${{ github.ref_name }}"
@@ -82,26 +83,31 @@ jobs:
             echo "github.event.workflow_run.head_commit: ${{ github.event.workflow_run.head_commit }}"
             echo "github.event.workflow_run.head_sha: ${{ github.event.workflow_run.head_sha }}"
 
-  # Update-Golang-version-check-PR-mergeability:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     pr_branch_ref: ${{ steps.check_mergeability.outputs.pr_branch_ref }}
-  #   steps:
-  #     - name: Get PR Info
-  #       id: get_pull_request_info
-  #       uses: octokit/request-action@v2.x
-  #       with:
-  #         route: GET /repos/${{ github.repository }}/pulls/${{ steps.findPr.outputs.pr }}
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.token }}
-  #     - name: Check mergeability
-  #       id: check_mergeability
-  #       run: |
-  #         echo "Mergeable: ${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}"
-  #         PR_BRANCH_REF=${{ fromJson(steps.get_pull_request_info.outputs.data).head.ref }}
-  #         echo "PR_BRANCH_REF: $PR_BRANCH_REF"
-  #         echo "pr_branch_ref=$PR_BRANCH_REF" >> $GITHUB_OUTPUT
-  #         if [ "${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}" != "true" ]; then
-  #           echo "PR has conflicts"
-  #           exit 1
-  #         fi
+  print-debug-info:
+    if: ${{ github.event_name == 'workflow_run' }}
+    name: Print debug info
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/debug-action@v2
+
+  check-mergeability:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.actor == 'bellycat77' }}
+    uses: networkservicemesh/.github/.github/workflows/check-mergeability.yaml@main
+    secrets:
+      token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+
+  automerge:
+    needs: [check-mergeability]
+    if: ${{ needs.check-mergeability.result == 'success' }}
+    uses: networkservicemesh/.github/.github/workflows/automerge.yaml@main
+    secrets:
+      token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+
+  resolve_conflicts:
+    needs: [check-mergeability]
+    if: ${{ always() && needs.check-mergeability.result == 'failure' && needs.check-mergeability.outputs.pr_branch_ref != '' }}
+    uses: networkservicemesh/.github/.github/workflows/resolve-conflicts.yaml@main
+    with:
+      pr_branch_ref: ${{ needs.check-mergeability.outputs.pr_branch_ref }}
+    secrets:
+      token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
