@@ -11,6 +11,12 @@ on:
         type: string
         required: true
 jobs:
+  print-debug-info:
+    name: Print debug info
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/debug-action@v2
+
   restrict-nsm-deps:
     runs-on: ubuntu-latest
     if: ${{ contains(github.event.push.ref, 'update/go_')}}
