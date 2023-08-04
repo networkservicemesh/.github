@@ -44,7 +44,7 @@ jobs:
         run: |
           find . -name '*.yaml' -exec sed -i -e 's/${{steps.get-go-version.outputs.old-go-version}}/${{steps.get-go-version.outputs.new-go-version}}/g' {} +;
           find . -name '*.yaml' -exec sed -i -e 's/${{steps.get-go-version.outputs.old-go-major-version}}/${{steps.get-go-version.outputs.new-go-major-version}}/g' {} +;
-      
+
       - name: Create & push commit
         run: |
           git config --global user.email "nsmbot@networkservicmesh.io"
