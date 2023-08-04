@@ -24,7 +24,7 @@ jobs:
             OLD_GO_VERSION=${OLD_GO_VERSION//"go-version: "/}
             OLD_GO_MAJOR_VERSION=${OLD_GO_VERSION%.*}
 
-            NEW_GO_VERSION=${${{ github.ref }}#"refs/heads/update/go_"}
+            NEW_GO_VERSION=${${{ github.ref }}#refs/heads/update/go_}
             NEW_GO_MAJOR_VERSION=${NEW_GO_VERSION%.*}
 
             echo "Old go version $OLD_GO_VERSION"
