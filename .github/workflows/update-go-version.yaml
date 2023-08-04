@@ -47,7 +47,7 @@ jobs:
       
       - name: Create & push commit
         run: |
-          git config --global user.email "nsmbot@networkservicmesh.io"
-          git config --global user.name "NSMBot"
+          git config --global user.email "nikita.skrynnik@xored.com"
+          git config --global user.name "NikitaSkrynnik"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
           git push
