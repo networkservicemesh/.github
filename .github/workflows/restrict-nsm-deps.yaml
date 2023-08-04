@@ -1,11 +1,9 @@
 ---
 name: Restrict dependencies on github.com/networkservicemesh/*
 on:
-  workflow_run:
-    types:
-      - completed
-    workflows:
-      - "ci"
+  push:
+    branches:
+      - 'main'
   workflow_call:
     inputs:
       allowed_repositories:
@@ -15,7 +13,7 @@ on:
 jobs:
   restrict-nsm-deps:
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.workflow_run.head_branch, 'update/go_')}}
+    if: ${{ contains(github.event.push.ref, 'update/go_')}}
     steps:
       - uses: actions/checkout@v2
       - name: Restrict dependencies on github.com/networkservicemesh/*
