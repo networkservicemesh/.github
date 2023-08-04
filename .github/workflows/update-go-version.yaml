@@ -15,38 +15,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get old and new go versions
         id: get-go-version
         run: |
-            OLD_GO_VERSION=$(grep -F "go-version: " .github/workflows/build-and-test.yaml)
-            OLD_GO_VERSION=${OLD_GO_VERSION//"go-version: "/}
-            OLD_GO_MAJOR_VERSION=${OLD_GO_VERSION%.*}
-
-            NEW_GO_VERSION=${${{ github.ref }}#"refs/heads/update/go_"}
+            NEW_GO_VERSION=$(echo "${{ github.ref }}" | sed 's/refs\/heads\/update\/go_//g')
             NEW_GO_MAJOR_VERSION=${NEW_GO_VERSION%.*}
-
-            echo "Old go version $OLD_GO_VERSION"
-            echo "Old go major version $OLD_GO_MAJOR_VERSION"
 
             echo "New go version $NEW_GO_VERSION"
             echo "New go major version $NEW_GO_MAJOR_VERSION"
-
-            echo "old-go-version=${OLD_GO_VERSION}" >> "$GITHUB_OUTPUT"
-            echo "old-go-major-version=${OLD_GO_MAJOR_VERSION}" >> "$GITHUB_OUTPUT"
 
             echo "new-go-version=${NEW_GO_VERSION}" >> "$GITHUB_OUTPUT"
             echo "new-go-major-version=${NEW_GO_MAJOR_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Update Go version in code to ${{ steps.get-version-number.outputs.new-go-version }}
         run: |
-          find . -name '*.yaml' -exec sed -i -e 's/${{steps.get-go-version.outputs.old-go-version}}/${{steps.get-go-version.outputs.new-go-version}}/g' {} +;
-          find . -name '*.yaml' -exec sed -i -e 's/${{steps.get-go-version.outputs.old-go-major-version}}/${{steps.get-go-version.outputs.new-go-major-version}}/g' {} +;
-      
+          find . -name '*.yaml' -exec sed -i -e 's/go-version\: [0-9]\+\.[0-9]\+\.[0-9]\+/${{steps.get-go-version.outputs.new-go-version}}/g' {} +;
+
       - name: Create & push commit
         run: |
-          git config --global user.email "nsmbot@networkservicmesh.io"
-          git config --global user.name "NSMBot"
+          git config --global user.email "nikita.skrynnik@xored.com"
+          git config --global user.name "NikitaSkrynnik"
           git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
           git push
+
+  create-pull-request:
+    uses: networkservicemesh/.github/.github/workflows/pr-for-updates.yaml@main
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
