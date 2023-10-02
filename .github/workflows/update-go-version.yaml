@@ -1,0 +1,44 @@
+---
+name: Update Golang version
+run-name: ${{ github.actor }} has started Golang version update
+on:
+  push:
+    branches:
+      - 'update/go_*'
+jobs:
+  update-go-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
+
+      - name: Get a new Go version
+        id: get-go-version
+        run: |
+            NEW_GO_VERSION=$(echo "${{ github.ref }}" | sed 's/refs\/heads\/update\/go_//g')
+            NEW_GO_MAJOR_VERSION=${NEW_GO_VERSION%.*}
+
+            echo "New go version $NEW_GO_VERSION"
+            echo "New go major version $NEW_GO_MAJOR_VERSION"
+
+            echo "new-go-version=${NEW_GO_VERSION}" >> "$GITHUB_OUTPUT"
+            echo "new-go-major-version=${NEW_GO_MAJOR_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Update Go version in code to ${{ steps.get-version-number.outputs.new-go-version }}
+        run: |
+          find . -name '*.yaml' -exec sed -i -e 's/go-version\: [0-9]\+\.[0-9]\+\.[0-9]\+/go-version\: ${{steps.get-go-version.outputs.new-go-version}}/g' {} +;
+
+      - name: Create & push commit
+        run: |
+          git config --global user.email "nsmbot@networkservicmesh.io"
+          git config --global user.name "NSMBot"
+          git commit -s -a -m "Update Go version to ${{ steps.get-version-number.outputs.new-go-version }}"
+          git push
+
+  create-pull-request:
+    uses: networkservicemesh/.github/.github/workflows/pr-for-updates.yaml@main
+    needs: [update-go-version]
+    secrets:
+      token: ${{ secrets.NSM_BOT_GITHUB_TOKEN }}
