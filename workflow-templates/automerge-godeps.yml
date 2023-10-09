@@ -13,7 +13,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.actor == 'nsmbot' }}
     steps:
       - name: Check out the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Fetch $default-branch
         run: |
           git remote -v

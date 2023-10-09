@@ -6,8 +6,8 @@ jobs:
   gogenerate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
         with:
           go-version: 1.20.8
       - run: go generate ./...

@@ -6,7 +6,7 @@ jobs:
   exclude-fmt-errorf:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Exclude fmt.Errorf
         run: |
           if grep -r --include=*.go --exclude=*.pb.go fmt.Errorf . ; then

@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout default branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.token }}
       - name: Checkout PR branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.pr_branch_ref }}
           fetch-depth: 0
@@ -47,7 +47,7 @@ jobs:
           git config pull.rebase false
           git pull -q origin main -s ort -X theirs
       - name: Setup Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v4
         with:
           go-version: 1.20.8
       - name: Update version manually

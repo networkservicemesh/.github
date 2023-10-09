@@ -6,11 +6,11 @@ jobs:
   gogenerate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: arduino/setup-protoc@v1
         with:
           version: '3.8.0'
-      - uses: actions/setup-go@v1
+      - uses: actions/setup-go@v4
         with:
           go-version: 1.20.8
       - name: Install proto-gen-go
