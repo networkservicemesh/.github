@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ${{ github.repository }}
           repository: ${{ github.repository }}
@@ -37,7 +37,7 @@ jobs:
         with:
           length: 7
       - name: Checkout networkservicemesh/deployments-k8s
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: networkservicemesh/deployments-k8s
           repository: networkservicemesh/deployments-k8s

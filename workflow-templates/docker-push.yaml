@@ -21,8 +21,8 @@ jobs:
       NAME: ${{ github.event.repository.name }}
     if: ${{ github.repository != 'networkservicemesh/cmd-template' && (github.event.workflow_run.conclusion == 'success' && github.actor == 'nsmbot' || github.ref == format('refs/heads/{{0}}',github.event.repository.default_branch) }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
         with:
           go-version: 1.20.8
       - name: Build ${NAME}:${GITHUB_SHA::8} image

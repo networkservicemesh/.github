@@ -11,7 +11,7 @@ jobs:
   restrict-nsm-deps:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Restrict dependencies on github.com/networkservicemesh/*
         env:
           ALLOWED_REPOSITORIES: ${{ inputs.allowed_repositories }}
