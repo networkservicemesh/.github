@@ -33,11 +33,5 @@ jobs:
           git tag ${{ needs.get-tag.outputs.tag }}
           git push origin ${{ needs.get-tag.outputs.tag }} -f
       - name: Create release ${{ needs.get-tag.outputs.tag }}
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.token }}
-        with:
-          tag_name: refs/tags/${{ needs.get-tag.outputs.tag }}
-          release_name: ${{ needs.get-tag.outputs.tag }}
-          draft: false
-          prerelease: false
+        run: |
+          gh release create ${{ needs.get-tag.outputs.tag }} --title ${{ needs.get-tag.outputs.tag }}
