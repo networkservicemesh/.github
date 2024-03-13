@@ -3,6 +3,11 @@ name: Release docker images
 on:
   workflow_call:
     inputs:
+      suffix:
+        description: optional image name suffix
+        type: string
+        default: ""
+        required: false
       tag:
         type: string
         required: true
@@ -35,4 +40,4 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ inputs.tag }}"
+          tags: "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}${{ inputs.suffix }}:${{ inputs.tag }}"
