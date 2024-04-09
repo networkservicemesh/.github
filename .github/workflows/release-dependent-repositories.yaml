@@ -27,7 +27,7 @@ jobs:
             branch=${{ github.event.workflow_run.head_branch }}
             tag=${branch#release/}
           fi
-          echo "$tag" 
+          echo "$tag"
           echo tag=${tag} >> $GITHUB_OUTPUT
         id: get-tag-step
 
