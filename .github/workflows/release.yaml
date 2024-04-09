@@ -6,6 +6,12 @@ on:
       token:
         required: true
 jobs:
+  print-debug-info:
+    name: Print debug info for Release workflow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/debug-action@v2
+
   get-tag:
     name: Get tag
     runs-on: ubuntu-latest
@@ -23,10 +29,21 @@ jobs:
     needs: get-tag
     runs-on: ubuntu-latest
     steps:
+      - name: Choose branch
+        id: branch
+        run: |
+          branch=${{ github.event.workflow_run.head_branch }}
+          if [ -z "$branch" ]; then
+            branch=${{ github.event.ref }}
+          fi
+          echo "$branch"
+          echo branch=${branch} >> $GITHUB_OUTPUT
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: refs/heads/${{github.event.workflow_run.head_branch}}
+          ref: refs/heads/${{ steps.branch.outputs.branch }}
+
       - name: Push tag ${{ needs.get-tag.outputs.tag }}
         run: |
           git status
