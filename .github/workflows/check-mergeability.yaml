@@ -12,35 +12,29 @@ jobs:
   check_mergeability:
     runs-on: ubuntu-latest
     outputs:
-      pr_branch_ref: ${{ steps.check_mergeability.outputs.pr_branch_ref }}
+      pr_branch_ref: ${{ steps.check_pr.outputs.pr_branch_ref }}
     steps:
-      - name: Find current PR
-        uses: jwalton/gh-find-current-pr@v1.0.2
-        id: findPr
-        with:
-          sha: ${{ github.event.workflow_run.head_sha }}
-          github-token: ${{ secrets.token }}
-      - name: Validate PR number
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Check PR
+        id: check_pr
         run: |
-          if [ -z ${{ steps.findPr.outputs.pr }} ]; then
-            echo "No opened PR was found for SHA ${{ github.event.workflow_run.head_sha }}"
+          pr_info=$(gh pr list --head ${{ github.event.workflow_run.head_branch }} --json number,mergeable,headRefName)
+          pr_number=$(echo $pr_info | jq -r '.[0].number')
+          mergeable=$(echo $pr_info | jq -r '.[0].mergeable')
+          pr_branch_ref=$(echo $pr_info | jq -r '.[0].headRefName')
+
+          if [ "$pr_number" == "null" ]; then
+            echo "No opened PR was found for branch ${{ github.event.workflow_run.head_branch }}"
             exit 1
           fi
-      - name: Get PR Info
-        id: get_pull_request_info
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/${{ github.repository }}/pulls/${{ steps.findPr.outputs.pr }}
+          echo "pr_branch_ref=$pr_branch_ref" >> $GITHUB_OUTPUT
+
+          if [ "$mergeable" != "MERGEABLE" ]; then
+            echo "PR $pr_number has conflicts"
+            exit 1
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.token }}
-      - name: Check mergeability
-        id: check_mergeability
-        run: |
-          echo "Mergeable: ${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}"
-          PR_BRANCH_REF=${{ fromJson(steps.get_pull_request_info.outputs.data).head.ref }}
-          echo "PR_BRANCH_REF: $PR_BRANCH_REF"
-          echo "pr_branch_ref=$PR_BRANCH_REF" >> $GITHUB_OUTPUT
-          if [ "${{ fromJson(steps.get_pull_request_info.outputs.data).mergeable }}" != "true" ]; then
-            echo "PR has conflicts"
-            exit 1
-          fi
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

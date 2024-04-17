@@ -11,17 +11,14 @@ jobs:
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
-      - name: Fetch main
-        run: |
-          git remote -v
-          git fetch --depth=1 origin main
+
       - name: Check allowed files
         run: |
           find . -type f ! -name 'go.mod' ! -name 'go.sum' ! -name '*.yaml' ! -name '*.yml' ! -name '*.txt' ! -name '*.md' ! -name '*.conf' ! -name 'Dockerfile' -exec git diff --exit-code origin/main -- {} +
+
       - name: Merge PR
-        uses: ridedott/merge-me-action@master
-        with:
-          GITHUB_LOGIN: nsmbot
-          ENABLED_FOR_MANUAL_CHANGES: true
-          GITHUB_TOKEN: ${{ secrets.token }}
-          MAXIMUM_RETRIES: 25
+        run: |
+          gh pr merge ${{ github.event.workflow_run.head_branch }} --squash --delete-branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
