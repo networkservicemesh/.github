@@ -37,4 +37,3 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.token }}
-
