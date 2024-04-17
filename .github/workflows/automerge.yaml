@@ -20,5 +20,5 @@ jobs:
         run: |
           gh pr merge ${{ github.event.workflow_run.head_branch }} --squash --delete-branch
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.token }}
 
