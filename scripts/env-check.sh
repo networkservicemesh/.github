@@ -43,8 +43,7 @@ mapfile -t readme_envs < <(grep -Eo "${env_prefix}\w+" "${repo}/README.md" | uni
 build_cmd "$repo" "$cmd_name"
 declare -a cmd_envs
 # Since this runs on "ubuntu-runner" I can be sure that no env vars are set and cmd fails
-mapfile -t cmd_envs < <( "${repo}/${cmd_name}" 2>&1 | grep -Eo "${env_prefix}\w+" | uniq | sort)
-
+mapfile -t cmd_envs < <( "${repo}/${cmd_name}" 2>&1 | grep -Eo "^${env_prefix}\w+" | uniq | sort)
 
 i=0
 j=0
@@ -74,6 +73,11 @@ done
 for ((;j<${#readme_envs[@]};++j)); do
     print_mismatch "${readme_envs[$j]}" "$cmd_name"
 done
+
+if [[ "${#readme_envs[@]}" -ne "${#cmd_envs[@]}" ]]; then
+    fail=1
+fi
+
 
 
 exit "$fail"
