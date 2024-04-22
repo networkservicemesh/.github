@@ -34,12 +34,6 @@ jobs:
             echo "Conflicts can be resolved only in go.mod and go.sum files, but conflicts were found in other files: $CONFLICTING_FILES"
             exit 1
           fi
-      - name: Check number of retries
-        run: |
-          if [ $(git log --oneline | head -n 10 | grep -Fc "Automatically resolving conflicts in go.mod") -ge 3 ]; then
-            echo "Couldn't automatically resolve conflicts (number of re-tries is >= 3). Please, resolve them manually."
-            exit 1
-          fi
       - name: Merge default branch
         run: |
           git config --global user.email "nsmbot@networkservicmesh.io"
