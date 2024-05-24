@@ -33,7 +33,6 @@ jobs:
           path: networkservicemesh/deployments-k8s
           repository: networkservicemesh/deployments-k8s
           token: ${{ secrets.token }}
-          ref: release/${{ inputs.tag }}
 
       - name: Find and Replace ci/${{ github.repository }} version
         uses: jacobtomlinson/gha-find-replace@master
