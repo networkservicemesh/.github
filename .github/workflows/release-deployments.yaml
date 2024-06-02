@@ -20,7 +20,8 @@ jobs:
           token: ${{ secrets.token }}
 
       - name: Push update to the deployments-k8s
-        shell: bash {0} # This option makes script continue execution even if some commands return non-zero exit code
+        # This option makes script continue execution even if some commands return non-zero exit code
+        shell: bash {0}
         run: |
           git config --global user.email "nsmbot@networkservicmesh.io"
           git config --global user.name "NSMBot"
@@ -31,7 +32,6 @@ jobs:
 
           if [ "$?" != 0 ]; then
             gh workflow run check-tag.yaml -f branch=$branch --repo networkservicemesh/deployments-k8s
-          fi    
+          fi
         env:
           GH_TOKEN: ${{ secrets.token }}
-
