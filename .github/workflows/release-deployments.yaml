@@ -27,13 +27,11 @@ jobs:
 
           branch=release/${{ inputs.tag }}
           git checkout -b $branch
+          git push origin $branch
 
-          if [[ "$?" == 0 ]]; then
-            git push origin $branch
-            exit 0
-          fi
-
-          gh workflow run check-tag.yaml -f branch=$branch --repo networkservicemesh/deployments-k8s
+          if [ "$?" != 0 ]; then
+            gh workflow run check-tag.yaml -f branch=$branch --repo networkservicemesh/deployments-k8s
+          fi    
         env:
           GH_TOKEN: ${{ secrets.token }}
 
