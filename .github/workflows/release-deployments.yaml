@@ -13,46 +13,25 @@ jobs:
   push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout ${{ github.repository }}
+      - name: Checkout deployments-k8s
         uses: actions/checkout@v4
         with:
-          path: ${{ github.repository }}
-          repository: ${{ github.repository }}
-
-      - name: Create commit message
-        working-directory: ${{ github.repository }}
-        run: |
-          echo "Update docker images to the latest tag ${{ inputs.tag }}" >> /tmp/commit-message
-          echo "" >> /tmp/commit-message
-          echo "Commit Message:"
-          cat /tmp/commit-message
-
-      - name: Checkout networkservicemesh/deployments-k8s
-        uses: actions/checkout@v4
-        with:
-          path: networkservicemesh/deployments-k8s
           repository: networkservicemesh/deployments-k8s
           token: ${{ secrets.token }}
 
-      - name: Find and Replace ci/${{ github.repository }} version
-        uses: jacobtomlinson/gha-find-replace@master
-        with:
-          find: "ci/${{ github.event.repository.name }}:.*\n"
-          replace: "${{ github.event.repository.name }}:${{ inputs.tag }}\n"
-
       - name: Push update to the deployments-k8s
-        working-directory: networkservicemesh/deployments-k8s
+        # This option makes script continue execution even if some commands return non-zero exit code
+        shell: bash {0}
         run: |
-          echo Starting to update repositotry deployments-k8s
-          git add -- .
-           if ! [ -n "$(git diff --cached --exit-code)" ]; then
-            echo Repository already up to date
-            exit 0;
-          fi
-
-          branch=release/${{ github.repository }}/${{ inputs.tag }}
           git config --global user.email "nsmbot@networkservicmesh.io"
           git config --global user.name "NSMBot"
-          git commit -s -F /tmp/commit-message
-          git checkout -b ${branch}
-          git push -f origin ${branch}
+
+          branch=release/${{ inputs.tag }}
+          git checkout -b $branch
+          git push origin $branch
+
+          if [ "$?" != 0 ]; then
+            gh workflow run check-tag.yaml -f branch=$branch --repo networkservicemesh/deployments-k8s
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.token }}
