@@ -31,7 +31,7 @@ jobs:
           git push origin $branch
 
           if [ "$?" != 0 ]; then
-            gh workflow run check-tag.yaml -f branch=$branch --repo networkservicemesh/deployments-k8s
+            gh workflow run check-tag.yaml -f branch=$branch --ref=$branch --repo networkservicemesh/deployments-k8s
           fi
         env:
           GH_TOKEN: ${{ secrets.token }}
