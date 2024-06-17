@@ -21,6 +21,7 @@ jobs:
         id: check_pr
         run: |
           pr_info=$(gh pr list --head ${{ github.event.workflow_run.head_branch }} --json number,mergeable,headRefName)
+# env GITHUB_RUN_NUMBER can be used
           pr_number=$(echo $pr_info | jq -r '.[0].number')
           mergeable=$(echo $pr_info | jq -r '.[0].mergeable')
           pr_branch_ref=$(echo $pr_info | jq -r '.[0].headRefName')
