@@ -2,6 +2,11 @@
 name: Push docker image to ghcr
 on:
   workflow_call:
+    inputs:
+      build-args:
+        type: string
+        required: false
+        default: ""
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -34,5 +39,6 @@ jobs:
           file: Dockerfile
           context: .
           platforms: linux/amd64
+          build-args: ${{ inputs.build-args }}
           push: true
           tags: ${{ steps.metaci.outputs.tags }}
