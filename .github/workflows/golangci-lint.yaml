@@ -6,7 +6,7 @@ on:
       linter-version:
         description: version of golangci-lint
         type: string
-        default: v1.53.3
+        default: v1.60.3
         required: false
 jobs:
   golangci-lint:
