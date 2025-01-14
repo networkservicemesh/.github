@@ -2,6 +2,12 @@
 name: Check generated files
 on:
   workflow_call:
+    inputs:
+      folder:
+        description: optional folder name to check diff
+        type: string
+        default: ""
+        required: false
 jobs:
   gogenerate:
     runs-on: ubuntu-latest
@@ -13,4 +19,4 @@ jobs:
       - run: go generate ./...
       - name: Check for changes
         run: |
-          git diff --name-only --exit-code || ( echo "Rerun go generate ./... locally and resubmit" && false )
+          git diff --name-only --exit-code ${{ inputs.folder }} || ( echo "Rerun go generate ./... locally and resubmit" && false )
