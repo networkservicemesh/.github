@@ -53,8 +53,19 @@ jobs:
           go-version: 1.23.3
       - name: Update ${{ matrix.repository }} locally
         working-directory: networkservicemesh/${{ matrix.repository }}
+        continue-on-error: true
         run: |
           GOPRIVATE=github.com/networkservicemesh go get -u github.com/${{ github.repository }}@${{ needs.get-tag.outputs.tag }}
+          go mod tidy
+          GOPRIVATE=github.com/networkservicemesh go get -u github.com/networkservicemesh/sdk-ovs@${{ needs.get-tag.outputs.tag }}
+          go mod tidy
+          GOPRIVATE=github.com/networkservicemesh go get -u github.com/networkservicemesh/sdk-sriov@${{ needs.get-tag.outputs.tag }}
+          go mod tidy
+          GOPRIVATE=github.com/networkservicemesh go get -u github.com/networkservicemesh/sdk-kernel@${{ needs.get-tag.outputs.tag }}
+          go mod tidy
+          GOPRIVATE=github.com/networkservicemesh go get -u github.com/networkservicemesh/sdk-k8s@${{ needs.get-tag.outputs.tag }}
+          go mod tidy
+          GOPRIVATE=github.com/networkservicemesh go get -u github.com/networkservicemesh/sdk-vpp@${{ needs.get-tag.outputs.tag }}
           go mod tidy
           git diff
       - name: Push update to the ${{ matrix.repository }}
