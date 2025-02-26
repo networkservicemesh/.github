@@ -1,0 +1,21 @@
+---
+name: Get Last Commit Author
+on:
+  workflow_call:
+    outputs:
+      author:
+        description: "The author of the last commit"
+        value: ${{ jobs.check-author.outputs.author }}
+
+jobs:
+  check-author:
+    runs-on: ubuntu-latest
+    outputs:
+      author: ${{ steps.get-author.outputs.author }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get last commit author
+        id: get-author
+        run: echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
