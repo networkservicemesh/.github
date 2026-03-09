@@ -28,12 +28,12 @@ jobs:
           repository: networkservicemesh/.github
           path: github
       - name: Install node modules
-        run: yarn add @actions/github
+        run: yarn add @actions/github@5
       - name: Generate Release Notes
         id: generate-release-notes
         run: |
-            ls -ltr github/scripts
-            node github/scripts/generate-release-notes.js '${{ secrets.token }}' '${{ needs.get-tag.outputs.tag }}' '${{ github.event.repository.name }}' > notes.txt
+          ls -ltr github/scripts
+          node github/scripts/generate-release-notes.js '${{ secrets.token }}' '${{ needs.get-tag.outputs.tag }}' '${{ github.event.repository.name }}' > notes.txt
       - name: Upload notes for release
         uses: actions/upload-artifact@v4
         with:
