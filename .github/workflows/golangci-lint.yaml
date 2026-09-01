@@ -6,7 +6,7 @@ on:
       linter-version:
         description: version of golangci-lint
         type: string
-        default: v1.64.2
+        default: v2.13.2
         required: false
 jobs:
   golangci-lint:
@@ -24,7 +24,7 @@ jobs:
       - name: Clean Go caches
         run: go clean -cache -modcache
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
           version: ${{ inputs.linter-version }}
           args: --timeout 5m --verbose
